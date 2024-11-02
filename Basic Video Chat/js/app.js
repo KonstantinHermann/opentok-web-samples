@@ -53,6 +53,7 @@ function initializeSession() {
 
   // Prevent publisher from getting removed from DOM 
   publisher.on("streamDestroyed", (event) => {
+      console.log('Preventing publisher from beeing removed...');
       event.preventDefault();
   });
 
