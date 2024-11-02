@@ -3,12 +3,28 @@
 let apiKey;
 let sessionId;
 let token;
+let session;
+let publisher;
 
 function handleError(error) {
   if (error) {
     console.error(error);
   }
 }
+
+// Unpublish button event listener
+const unpublishBtn = document.getElementById("unpublishBtn");
+unpublishBtn.addEventListener("click", () => {
+  console.log('Unpublishing from the session....', session);
+  session.unpublish(publisher);
+});
+
+// Publish button event listener
+const publishBtn = document.getElementById("publishBtn");
+publishBtn.addEventListener("click", () => {
+  console.log('Publishing to the session....', session);
+  session.publish(publisher, handleError);
+});
 
 function initializeSession() {
   const session = OT.initSession(apiKey, sessionId);
@@ -35,6 +51,11 @@ function initializeSession() {
   };
   const publisher = OT.initPublisher('publisher', publisherOptions, handleError);
 
+  // Prevent publisher from getting removed from DOM 
+  publisher.on("streamDestroyed", (event) => {
+      event.preventDefault();
+  });
+
   // Connect to the session
   session.connect(token, (error) => {
     if (error) {
@@ -44,6 +65,8 @@ function initializeSession() {
       session.publish(publisher, handleError);
     }
   });
+
+  return {session, publisher};
 }
 
 // See the config.js file.
@@ -51,7 +74,9 @@ if (API_KEY && TOKEN && SESSION_ID) {
   apiKey = API_KEY;
   sessionId = SESSION_ID;
   token = TOKEN;
-  initializeSession();
+  let objects = initializeSession();
+  session = objects.session;
+  publisher = objects.publisher;
 } else if (SAMPLE_SERVER_BASE_URL) {
   // Make a GET request to get the OpenTok API key, session ID, and token from the server
   fetch(SAMPLE_SERVER_BASE_URL + '/session')

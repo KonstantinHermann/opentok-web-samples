@@ -27,3 +27,9 @@ body, html {
     border: 3px solid white;
     border-radius: 3px;
 }
+#controls {
+    position: absolute;
+    bottom: 260px;
+    left: 20px;
+    z-index: 100;
+}
